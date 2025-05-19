@@ -16,40 +16,45 @@ export const goodsFromServer = [
 ];
 
 export const App = () => {
-  const [goods, setGoods] = useState([...goodsFromServer]);
   const [sortType, setSortType] = useState('default');
   const [isReversed, setIsReversed] = useState(false);
 
-  const sortAlphabetical = () => {
-    const sorted = [...goodsFromServer].sort();
+  const getSortedGoods = () => {
+    const sorted = [...goodsFromServer];
 
-    setGoods(isReversed ? [...sorted].reverse() : sorted);
+    if (sortType === 'alphabet') {
+      sorted.sort();
+    } else if (sortType === 'length') {
+      sorted.sort((a, b) => a.length - b.length);
+    }
+
+    if (isReversed) {
+      sorted.reverse();
+    }
+
+    return sorted;
+  };
+
+  const sortAlphabetical = () => {
     setSortType('alphabet');
   };
 
   const sortByLength = () => {
-    const sorted = [...goodsFromServer].sort((a, b) => a.length - b.length);
-
-    setGoods(isReversed ? [...sorted].reverse() : sorted);
     setSortType('length');
   };
 
   const reverseGoods = () => {
-    const reversed = [...goods].reverse();
-
-    setGoods(reversed);
-    setIsReversed(!isReversed);
+    setIsReversed(prev => !prev);
   };
 
   const resetGoods = () => {
-    setGoods([...goodsFromServer]);
     setSortType('default');
     setIsReversed(false);
   };
 
   const isOriginalOrder =
     !isReversed &&
-    goods.every((item, index) => item === goodsFromServer[index]);
+    getSortedGoods().every((item, index) => item === goodsFromServer[index]);
 
   return (
     <div className="section content">
@@ -90,7 +95,7 @@ export const App = () => {
       </div>
 
       <ul>
-        {goods.map(good => (
+        {getSortedGoods().map(good => (
           <li key={good} data-cy="Good">
             {good}
           </li>
